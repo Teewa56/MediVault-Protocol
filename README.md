@@ -127,7 +127,7 @@ The entire architecture is deployed on Polkadot Hub's EVM environment, making it
 
 ### Step 1: Clone the Repository
 ```bash
-git clone https://github.com/your-org/medivault-protocol.git
+git clone https://github.com/Teewa56/medivault-protocol.git
 cd medivault-protocol
 ```
 
