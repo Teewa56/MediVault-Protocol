@@ -451,8 +451,13 @@ contract MediVault is
     }
 
     function _getImplementation() internal view returns (address) {
-        // Get current implementation address (implementation-specific)
-        return address(0); // Placeholder - would need storage slot access
+        // ERC1967 implementation slot address: 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc
+        bytes32 slot = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
+        address impl;
+        assembly {
+            impl := sload(slot)
+        }
+        return impl;
     }
 
     /**
