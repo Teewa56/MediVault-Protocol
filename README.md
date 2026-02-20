@@ -69,25 +69,25 @@ Hospital verification is managed by a `HospitalRegistry.sol` contract, which is 
         | (Deploy Vault, Fund, Set Biometric Commitment)
         v
 [ MediVaultFactory.sol ] ──────────────────────────────────┐
-        |                                                   |
-        | (Creates per-user vault instances)                |
-        v                                                   |
+        |                                                  |
+        | (Creates per-user vault instances)               |
+        v                                                  |
 [ MediVault.sol (per user) ]                               |
    - stablecoin balance                                    |
    - biometric commitment (bytes32)                        |
-   - emergency cap setting                                  |
+   - emergency cap setting                                 |
    - authorized hospital mapping                           |
    - guardian wallet list                                  |
-        |                                                   |
-        | (Hospital submits signed payment request)         |
-        v                                                   |
+        |                                                  |
+        | (Hospital submits signed payment request)        |
+        v                                                  |
 [ Payment Authorization Logic ]                            |
    - Verify hospital HAT via HospitalRegistry.sol          |
    - Verify biometric match (hash comparison)              |
    - Check withdrawal cap & cooldown                       |
    - Release funds via ERC-20 transfer                     |
-        |                                                   |
-        v                                                   |
+        |                                                  |
+        v                                                  |
 [ HospitalRegistry.sol ] ◄─────────────────────────────────┘
    - Hospital registration & verification
    - HAT (Hospital Access Token) issuance
@@ -97,6 +97,7 @@ Hospital verification is managed by a `HospitalRegistry.sol` contract, which is 
    - User identity linked to vault address
    - Parachain-level identity propagation via XCM (future)
 ```
+For more information on the technical architecture and design, please refer to the [TECHNICAL_DOCUMENT.md](./TECHNICAL_DOCUMENT.md) file.
 
 The entire architecture is deployed on Polkadot Hub's EVM environment, making it fully composable with other Solidity protocols on Hub while remaining connected to the broader Polkadot ecosystem through XCM for future cross-parachain identity and payment features.
 
@@ -133,23 +134,22 @@ cd medivault-protocol
 
 ### Step 2: Install Dependencies
 ```bash
+cd frontend 
+npm install
+cd ../smart-contracts
 npm install
 ```
 
 ### Step 3: Configure Environment Variables
 ```bash
 cp .env.example .env
-```
-Edit `.env` and fill in the following:
-```
-PRIVATE_KEY=your_deployer_wallet_private_key
-POLKADOT_HUB_RPC=https://rpc.polkadot-hub-testnet.io
-USDC_CONTRACT_ADDRESS=0x...
+cd ../frontend
+cp .env.example .env
 ```
 
 ### Step 4: Compile Smart Contracts
 ```bash
-cd smart-contracts
+cd ../smart-contracts
 npx hardhat compile
 ```
 
@@ -165,7 +165,7 @@ npx hardhat ignition deploy ./ignition/modules/MediVault.ts --network polkadotHu
 
 ### Step 7: Run the Frontend
 ```bash
-cd frontend
+cd ../frontend
 npm install
 npm run dev
 ```
