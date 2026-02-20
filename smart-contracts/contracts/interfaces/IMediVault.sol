@@ -11,6 +11,8 @@ interface IMediVault {
     event HospitalRevoked(address indexed hospital);
     event GuardianAdded(address indexed guardian);
     event GuardianRemoved(address indexed guardian);
+    event UpgradeRequested(address indexed newImplementation, uint256 executeAfter);
+    event UpgradeExecuted(address indexed oldImplementation, address indexed newImplementation);
 
     error NotOwner();
     error NotAuthorizedHospital();

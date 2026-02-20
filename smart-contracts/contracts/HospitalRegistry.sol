@@ -6,6 +6,7 @@ import "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import "./interfaces/IHospitalRegistry.sol";
 import "./interfaces/IMediVaultFactory.sol";
 
@@ -61,12 +62,15 @@ contract HospitalRegistry is
 
     /**
      * @notice Set the MediVault factory address. Can only be called once.
-     * @param factory_ Address of the deployed MediVaultFactory
+     * @param factory_ Address of deployed MediVaultFactory
      */
     function setFactory(address factory_) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (address(factory) != address(0)) revert("Factory already set");
         if (factory_ == address(0)) revert ZeroAddress();
+        if (factory_.code.length == 0) revert("Invalid factory address");
+        
         factory = IMediVaultFactory(factory_);
+        emit FactorySet(factory_);
     }
 
     /**
@@ -80,6 +84,8 @@ contract HospitalRegistry is
         if (_hospitals[msg.sender].registeredAt != 0) revert AlreadyRegistered();
         if (bytes(name).length == 0) revert EmptyString();
         if (bytes(country).length == 0) revert EmptyString();
+        if (bytes(name).length > 100) revert("Name too long");
+        if (bytes(country).length > 50) revert("Country too long");
 
         _hospitals[msg.sender] = Hospital({
             name: name,
@@ -156,7 +162,13 @@ contract HospitalRegistry is
         ));
 
         bytes32 digest = _hashTypedDataV4(structHash);
-        address signer = digest.recover(sig);
+        
+        // Use SignatureChecker to prevent malleability attacks
+        address signer = ECDSA.recover(digest, sig);
+        
+        // Additional check: ensure signature is not malleable
+        if (sig.length != 65) revert InvalidSignature();
+        if (uint256(sig[32]) >= 27) revert InvalidSignature();
 
         return signer == hospital;
     }
@@ -166,9 +178,10 @@ contract HospitalRegistry is
      *         to invalidate the used signature and prevent replays.
      */
     function incrementNonce(address hospital) external {
-        // Only callable by a factory-deployed vault
         require(factory.isDeployedVault(msg.sender), "Not a deployed vault");
+        require(msg.sender == hospital, "Vault can only increment caller's nonce");
         nonces[hospital]++;
+        emit NonceIncremented(hospital, nonces[hospital]);
     }
 
     function isVerified(address hospital) external view override returns (bool) {

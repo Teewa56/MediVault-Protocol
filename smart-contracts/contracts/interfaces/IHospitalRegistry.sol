@@ -13,6 +13,7 @@ interface IHospitalRegistry {
     event HospitalRegistered(address indexed hospital, string name, string country);
     event HospitalVerified(address indexed hospital);
     event HospitalRevoked(address indexed hospital);
+    event FactorySet(address indexed factory);
 
     error AlreadyRegistered();
     error NotRegistered();
