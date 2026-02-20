@@ -116,6 +116,7 @@ PRIVATE_KEY=<deployer_private_key>
 POLKADOT_HUB_RPC=https://westend-asset-hub-eth-rpc.polkadot.io
 USDC_ADDRESS=<stablecoin_contract_on_hub>
 MULTISIG_ADMIN=<3 wallet addresses separated by comma>
+ADMIN_ADDRESS=<admin_wallet_address>
 ```
 ### => Required .env variables for frontend:
 ```

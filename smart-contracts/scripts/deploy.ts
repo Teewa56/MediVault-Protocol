@@ -1,5 +1,5 @@
-import { ethers } from "ethers";
 import hardhat from "hardhat";
+import { formatEther, keccak256, stringToHex } from "viem";
 import ignition from "hardhat";
 import MediVaultProtocol from "../ignition/deploy.js";
 
@@ -15,11 +15,11 @@ async function main() {
   const balance = await publicClient.getBalance({
     address: deployer.account.address,
   });
-  console.log("Account balance:", ethers.formatEther(balance), "ETH");
+  console.log("Account balance:", formatEther(balance), "ETH");
 
   // Get configuration from environment variables
   const stablecoinAddress = process.env.USDC_ADDRESS || "0x0";
-  const adminAddress = process.env.ADMIN_ADDRESS || deployer.account.address;
+  const adminAddress = deployer.account.address || process.env.ADMIN_ADDRESS;
 
   if (stablecoinAddress === "0x0") {
     console.warn("WARNING: USDC_ADDRESS not set in environment. Using placeholder address.");
@@ -63,7 +63,7 @@ async function main() {
     console.log("- Stablecoin:", deployedStablecoin);
     
     // Check registry admin
-    const DEFAULT_ADMIN_ROLE = ethers.keccak256(ethers.toUtf8Bytes("DEFAULT_ADMIN_ROLE"));
+    const DEFAULT_ADMIN_ROLE = keccak256(stringToHex("DEFAULT_ADMIN_ROLE"));
     const registryAdmin = await hospitalRegistry.read.hasRole([
       DEFAULT_ADMIN_ROLE,
       adminAddress,

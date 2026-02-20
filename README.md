@@ -160,7 +160,7 @@ npx hardhat test
 
 ### Step 6: Deploy to Polkadot Hub Testnet
 ```bash
-npx hardhat ignition deploy ./ignition/modules/MediVault.ts --network polkadotHub
+npx hardhat run scripts/deploy.ts --network polkadotHubTestnet
 ```
 
 ### Step 7: Run the Frontend
