@@ -8,6 +8,7 @@ The system is structured around three core contracts: a factory that deploys per
 
 ## 2. Folder Structure
 The repository is split into two top-level workspaces:
+```
 smart-contracts/
 smart-contracts/
 ├── contracts/
@@ -47,6 +48,8 @@ frontend/
 │   ├── wagmi.ts                 # wagmi + RainbowKit config
 │   └── biometric.ts             # WebAuthn hashing utilities
 └── package.json
+```
+--- 
 
 ## 3. Smart Contract Architecture
 ### 3.1 Contract Roles & Separation of Concerns
