@@ -5,6 +5,19 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import { 
+  Heart, 
+  Shield, 
+  Plus, 
+  Settings, 
+  Building2, 
+  Home,
+  Wallet,
+  User,
+  ArrowLeft,
+  CheckCircle
+} from "lucide-react";
 import { VaultCard } from "@/components/VaultCard";
 import { DepositForm } from "@/components/DepositForm";
 import { BiometricSetup } from "@/components/BiometricSetup";
@@ -71,58 +84,105 @@ export default function DashboardPage() {
     if (!isConnected) return null;
 
     return (
-        <main className="min-h-screen bg-zinc-950">
+        <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
         {/* Nav */}
-        <nav className="flex items-center justify-between px-8 py-5 border-b border-zinc-800">
-            <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-violet-600 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">MV</span>
+        <motion.nav 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="sticky top-0 z-50 glass-effect border-b border-blue-100"
+        >
+            <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+                <div className="flex items-center justify-between h-16">
+                    <Link href="/" className="flex items-center gap-3">
+                        <motion.div 
+                            whileHover={{ rotate: 360 }}
+                            transition={{ duration: 0.6 }}
+                            className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg"
+                        >
+                            <Heart className="w-6 h-6 text-white" />
+                        </motion.div>
+                        <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                            MediVault
+                        </span>
+                    </Link>
+                    <ConnectButton />
+                </div>
             </div>
-            <span className="text-white font-semibold text-lg">MediVault</span>
-            </Link>
-            <ConnectButton />
-        </nav>
+        </motion.nav>
 
-        <div className="max-w-4xl mx-auto px-6 py-10 flex flex-col gap-8">
-            <div>
-            <h1 className="text-3xl font-bold text-white">Your Vault</h1>
-            <p className="text-zinc-400 mt-1">Manage your emergency medical fund.</p>
-            </div>
+        <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-12">
+            <motion.div 
+                className="mb-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+            >
+                <h1 className="text-4xl font-bold text-gray-900 mb-2">Your Vault</h1>
+                <p className="text-xl text-gray-600">Manage your emergency medical fund.</p>
+            </motion.div>
 
             {/* No vault state */}
             {!hasVault ? (
-            <div className="bg-zinc-900 border border-dashed border-zinc-700 rounded-2xl p-12 flex flex-col items-center gap-4 text-center">
-                <span className="text-5xl">🏦</span>
-                <h2 className="text-white text-xl font-semibold">No Vault Found</h2>
-                <p className="text-zinc-400 text-sm max-w-sm">
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="bg-white rounded-3xl shadow-xl border border-blue-100 p-16 flex flex-col items-center gap-6 text-center"
+            >
+                <motion.div 
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center"
+                >
+                    <Wallet className="w-10 h-10 text-white" />
+                </motion.div>
+                <h2 className="text-2xl font-bold text-gray-900">No Vault Found</h2>
+                <p className="text-gray-600 max-w-md leading-relaxed">
                 Deploy your personal MediVault smart contract to start securing your emergency medical fund.
                 </p>
-                <button
-                onClick={handleCreateVault}
-                disabled={isCreating}
-                className="px-8 py-3 bg-violet-600 hover:bg-violet-500 disabled:bg-zinc-700 text-white font-semibold rounded-xl transition-colors"
+                <motion.button
+                    onClick={handleCreateVault}
+                    disabled={isCreating}
+                    className="px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                 >
-                {isCreating ? "Deploying..." : "Create My Vault"}
-                </button>
-            </div>
+                    <Plus className="w-5 h-5" />
+                    {isCreating ? "Deploying..." : "Create My Vault"}
+                </motion.button>
+            </motion.div>
             ) : (
             <>
                 {/* Tabs */}
-                <div className="flex gap-1 bg-zinc-900 border border-zinc-800 rounded-xl p-1">
-                {(["overview", "deposit", "biometric", "hospitals"] as const).map((tab) => (
-                    <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`flex-1 py-2 rounded-lg text-sm font-medium capitalize transition-colors ${
-                        activeTab === tab
-                        ? "bg-violet-600 text-white"
-                        : "text-zinc-400 hover:text-white"
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    className="flex gap-2 bg-white/80 backdrop-blur-sm border border-blue-200 rounded-2xl p-2 shadow-lg"
+                >
+                {[
+                    { id: "overview", label: "Overview", icon: Home },
+                    { id: "deposit", label: "Deposit", icon: Plus },
+                    { id: "biometric", label: "Biometric", icon: User },
+                    { id: "hospitals", label: "Hospitals", icon: Building2 }
+                ].map((tab) => (
+                    <motion.button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
+                        activeTab === tab.id
+                        ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg"
+                        : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
                     }`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     >
-                    {tab}
-                    </button>
+                    <tab.icon className="w-4 h-4" />
+                    {tab.label}
+                    </motion.button>
                 ))}
-                </div>
+                </motion.div>
 
                 {/* Tab content */}
                 {activeTab === "overview" && (
@@ -134,38 +194,50 @@ export default function DashboardPage() {
                     <DepositForm vaultAddress={vaultAddress as `0x${string}`} />
 
                     {/* Emergency config */}
-                    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 flex flex-col gap-4">
-                    <h3 className="text-white font-semibold text-lg">Emergency Config</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="flex flex-col gap-1">
-                        <label className="text-zinc-500 text-xs">Cap (USDC)</label>
-                        <input
-                            type="number"
-                            placeholder="500"
-                            value={configCap}
-                            onChange={(e) => setConfigCap(e.target.value)}
-                            className="bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-violet-500"
-                        />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                        <label className="text-zinc-500 text-xs">Cooldown (hours)</label>
-                        <input
-                            type="number"
-                            placeholder="24"
-                            value={configCooldown}
-                            onChange={(e) => setConfigCooldown(e.target.value)}
-                            className="bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-violet-500"
-                        />
-                        </div>
-                    </div>
-                    <button
-                        onClick={handleSetConfig}
-                        disabled={!configCap}
-                        className="w-full py-2.5 bg-zinc-700 hover:bg-zinc-600 disabled:opacity-50 text-white font-medium rounded-xl transition-colors"
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                        className="bg-white rounded-2xl shadow-lg border border-blue-100 p-8 flex flex-col gap-6"
                     >
-                        Update Config
-                    </button>
-                    </div>
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
+                                <Settings className="w-5 h-5 text-white" />
+                            </div>
+                            <h3 className="text-gray-900 font-semibold text-xl">Emergency Config</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="flex flex-col gap-2">
+                                <label className="text-gray-700 text-sm font-medium">Cap (USDC)</label>
+                                <input
+                                    type="number"
+                                    placeholder="500"
+                                    value={configCap}
+                                    onChange={(e) => setConfigCap(e.target.value)}
+                                    className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <label className="text-gray-700 text-sm font-medium">Cooldown (hours)</label>
+                                <input
+                                    type="number"
+                                    placeholder="24"
+                                    value={configCooldown}
+                                    onChange={(e) => setConfigCooldown(e.target.value)}
+                                    className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                />
+                            </div>
+                        </div>
+                        <motion.button
+                            onClick={handleSetConfig}
+                            disabled={!configCap}
+                            className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-medium rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50"
+                            whileHover={{ scale: configCap ? 1.02 : 1 }}
+                            whileTap={{ scale: configCap ? 0.98 : 1 }}
+                        >
+                            Update Config
+                        </motion.button>
+                    </motion.div>
                 </div>
                 )}
 
@@ -177,29 +249,42 @@ export default function DashboardPage() {
                 )}
 
                 {activeTab === "hospitals" && (
-                <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 flex flex-col gap-4">
-                    <h3 className="text-white font-semibold text-lg">Authorized Hospitals</h3>
-                    <p className="text-zinc-400 text-sm">
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    className="bg-white rounded-2xl shadow-lg border border-blue-100 p-8 flex flex-col gap-6"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
+                            <Building2 className="w-5 h-5 text-white" />
+                        </div>
+                        <h3 className="text-gray-900 font-semibold text-xl">Authorized Hospitals</h3>
+                    </div>
+                    <p className="text-gray-600 leading-relaxed">
                     Only hospitals you explicitly authorize here can request payments from your vault.
                     They must also be globally verified in the MediVault registry.
                     </p>
-                    <div className="flex gap-2">
-                    <input
-                        type="text"
-                        placeholder="0x... hospital wallet address"
-                        value={hospitalInput}
-                        onChange={(e) => setHospitalInput(e.target.value)}
-                        className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-white font-mono text-sm focus:outline-none focus:border-violet-500"
-                    />
-                    <button
-                        onClick={handleAuthorizeHospital}
-                        disabled={!hospitalInput}
-                        className="px-5 py-2.5 bg-violet-600 hover:bg-violet-500 disabled:bg-zinc-700 text-white font-medium rounded-xl transition-colors whitespace-nowrap"
-                    >
-                        Authorize
-                    </button>
+                    <div className="flex gap-3">
+                        <input
+                            type="text"
+                            placeholder="0x... hospital wallet address"
+                            value={hospitalInput}
+                            onChange={(e) => setHospitalInput(e.target.value)}
+                            className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        />
+                        <motion.button
+                            onClick={handleAuthorizeHospital}
+                            disabled={!hospitalInput}
+                            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-medium rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 whitespace-nowrap"
+                            whileHover={{ scale: hospitalInput ? 1.05 : 1 }}
+                            whileTap={{ scale: hospitalInput ? 0.95 : 1 }}
+                        >
+                            <CheckCircle className="w-4 h-4" />
+                            Authorize
+                        </motion.button>
                     </div>
-                </div>
+                </motion.div>
                 )}
             </>
             )}
