@@ -7,6 +7,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "./interfaces/IHospitalRegistry.sol";
+import "./interfaces/IMediVaultFactory.sol";
 
 /**
  * @title HospitalRegistry
@@ -34,7 +35,9 @@ contract HospitalRegistry is
     mapping(address => Hospital) private _hospitals;
     mapping(address => uint256) public nonces;
 
-    uint256[48] private __gap;
+    IMediVaultFactory public factory;
+
+    uint256[47] private __gap;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -54,6 +57,16 @@ contract HospitalRegistry is
         _grantRole(DEFAULT_ADMIN_ROLE, admin_);
         _grantRole(VERIFIER_ROLE, admin_);
         _grantRole(UPGRADER_ROLE, admin_);
+    }
+
+    /**
+     * @notice Set the MediVault factory address. Can only be called once.
+     * @param factory_ Address of the deployed MediVaultFactory
+     */
+    function setFactory(address factory_) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        if (address(factory) != address(0)) revert("Factory already set");
+        if (factory_ == address(0)) revert ZeroAddress();
+        factory = IMediVaultFactory(factory_);
     }
 
     /**
@@ -153,8 +166,8 @@ contract HospitalRegistry is
      *         to invalidate the used signature and prevent replays.
      */
     function incrementNonce(address hospital) external {
-        // Only callable by a deployed vault — in production, restrict to factory-registered vaults
-        // For MVP, open but nonce is single-use per signature anyway
+        // Only callable by a factory-deployed vault
+        require(factory.isDeployedVault(msg.sender), "Not a deployed vault");
         nonces[hospital]++;
     }
 
