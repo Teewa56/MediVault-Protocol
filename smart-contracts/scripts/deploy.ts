@@ -43,14 +43,14 @@ async function main() {
       },
     });
 
-    console.log("\n✅ Deployment successful!");
+    console.log("\nDeployment successful!");
     console.log("Contract addresses:");
     console.log("- HospitalRegistry:", hospitalRegistry.address);
     console.log("- MediVault Implementation:", mediVault.address);
     console.log("- MediVaultFactory:", factory.address);
 
     // Verify deployment by calling view functions
-    console.log("\n🔍 Verifying deployment...");
+    console.log("\nVerifying deployment...");
     
     // Check factory configuration
     const deployedImplementation = await factory.read.implementation();
@@ -70,14 +70,14 @@ async function main() {
     ]);
     console.log("- Registry admin set correctly:", registryAdmin);
 
-    console.log("\n🎉 MediVault Protocol deployed successfully!");
+    console.log("\nMediVault Protocol deployed successfully!");
     console.log("\nNext steps:");
     console.log("1. Update frontend .env with contract addresses");
     console.log("2. Register hospitals in the HospitalRegistry");
     console.log("3. Users can create vaults via the MediVaultFactory");
 
   } catch (error) {
-    console.error("❌ Deployment failed:", error);
+    console.error("Deployment failed:", error);
     process.exit(1);
   }
 }
