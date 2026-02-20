@@ -149,6 +149,7 @@ USDC_CONTRACT_ADDRESS=0x...
 
 ### Step 4: Compile Smart Contracts
 ```bash
+cd smart-contracts
 npx hardhat compile
 ```
 
