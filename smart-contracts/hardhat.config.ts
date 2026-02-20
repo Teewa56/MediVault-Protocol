@@ -34,5 +34,17 @@ export default defineConfig({
       url: configVariable("SEPOLIA_RPC_URL"),
       accounts: [configVariable("SEPOLIA_PRIVATE_KEY")],
     },
+    polkadotHubTestnet: {
+      type: "http",
+      chainType: "l1",
+      url: configVariable("POLKADOT_HUB_RPC"),
+      accounts: [configVariable("PRIVATE_KEY")],
+    },
+    polkadotHub: {
+      type: "http",
+      chainType: "l1",
+      url: configVariable("POLKADOT_HUB_MAINNET_RPC"),
+      accounts: [configVariable("PRIVATE_KEY")],
+    },
   },
 });
