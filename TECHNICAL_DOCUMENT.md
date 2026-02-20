@@ -114,6 +114,9 @@ MULTISIG_ADMIN=<3 wallet addresses separated by comma>
 NEXT_PUBLIC_FACTORY_ADDRESS=<deployed_factory_address>
 NEXT_PUBLIC_REGISTRY_ADDRESS=<deployed_registry_address>
 NEXT_PUBLIC_CHAIN_ID=420420421
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=<walletconnect_project_id>
+NEXT_PUBLIC_HUB_MAINNET_RPC=<hub_mainnet_rpc>
+NEXT_PUBLIC_USDC_ADDRESS=<usdc_address>
 
 ## 7. Implementation Notes
 1. Biometric data is never stored raw on-chain. Only a keccak256 hash of the client-generated WebAuthn credential is stored as bytes32.
