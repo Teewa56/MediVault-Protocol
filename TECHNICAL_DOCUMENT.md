@@ -66,6 +66,7 @@ Contract	Responsibility
 All storage variables in MediVault.sol use storage gaps (uint256[50] __gap) to prevent storage slot collision on upgrades
 ### 3.3 Data & State Design
 MediVault.sol stores the following state per vault:
+```
 address public owner;                          // Vault owner
 IERC20 public stablecoin;                      // Accepted token (USDC)
 bytes32 public biometricCommitment;            // keccak256 hash of biometric template
@@ -81,6 +82,7 @@ struct Hospital {
     bool verified;
     uint256 registeredAt;
 }
+```
 
 ## 4. Key Protocol Flows
 ### 4.1 User Vault Setup
@@ -109,18 +111,22 @@ On success: USDC transferred directly to hospital wallet, event emitted
 
 ## 6. Environment Configuration
 ### => Required .env variables for smart-contracts:
+```
 PRIVATE_KEY=<deployer_private_key>
 POLKADOT_HUB_RPC=https://westend-asset-hub-eth-rpc.polkadot.io
 USDC_ADDRESS=<stablecoin_contract_on_hub>
 MULTISIG_ADMIN=<3 wallet addresses separated by comma>
+```
 ### => Required .env variables for frontend:
+```
 NEXT_PUBLIC_FACTORY_ADDRESS=<deployed_factory_address>
 NEXT_PUBLIC_REGISTRY_ADDRESS=<deployed_registry_address>
 NEXT_PUBLIC_CHAIN_ID=420420421
 NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=<walletconnect_project_id>
 NEXT_PUBLIC_HUB_MAINNET_RPC=<hub_mainnet_rpc>
 NEXT_PUBLIC_USDC_ADDRESS=<usdc_address>
-
+```
+---
 ## 7. Implementation Notes
 1. Biometric data is never stored raw on-chain. Only a keccak256 hash of the client-generated WebAuthn credential is stored as bytes32.
 2. The proxy pattern means all vault proxies share one implementation — a single upgrade call on the factory updates logic for all users simultaneously.
