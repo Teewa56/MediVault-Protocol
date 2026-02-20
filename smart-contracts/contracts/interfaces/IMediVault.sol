@@ -30,7 +30,8 @@ interface IMediVault {
     function initialize(
         address owner_,
         address stablecoin_,
-        address registry_
+        address registry_,
+        address priceFeed_
     ) external;
 
     function deposit(uint256 amount) external;

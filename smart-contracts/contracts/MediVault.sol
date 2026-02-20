@@ -87,7 +87,7 @@ contract MediVault is
         address stablecoin_,
         address registry_,
         address priceFeed_
-    ) external override initializer {
+    ) external initializer {
         if (owner_ == address(0))      revert ZeroAddress();
         if (stablecoin_ == address(0)) revert ZeroAddress();
         if (registry_ == address(0))   revert ZeroAddress();
@@ -436,7 +436,9 @@ contract MediVault is
         require(block.timestamp >= upgradeRequestedAt + upgradeTimelock, "Timelock not expired");
         
         address oldImplementation = _getImplementation();
-        _authorizeUpgrade(pendingUpgradeImplementation);
+        
+        // Perform the actual upgrade
+        upgradeToAndCall(pendingUpgradeImplementation, "");
         
         emit UpgradeExecuted(oldImplementation, pendingUpgradeImplementation);
         
@@ -447,7 +449,6 @@ contract MediVault is
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {
         // Check timelock before allowing upgrade
         require(pendingUpgradeImplementation == address(0) || block.timestamp >= upgradeRequestedAt + upgradeTimelock, "Timelock active");
-        super._authorizeUpgrade(newImplementation);
     }
 
     function _getImplementation() internal view returns (address) {

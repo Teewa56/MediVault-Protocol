@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it, before } from "node:test";
 import { network } from "hardhat";
+import { encodeFunctionData } from "viem";
 
 describe("HospitalRegistry", async () => {
     const { viem } = await network.connect();
@@ -8,20 +9,23 @@ describe("HospitalRegistry", async () => {
 
     let registryImpl: any;
     let registry: any; // proxy
+    let proxy: any;
 
     before(async () => {
         // Deploy implementation
         registryImpl = await viem.deployContract("HospitalRegistry");
 
-        // Deploy proxy
+        // Deploy proxy using viem's built-in proxy deployment
         const initData = encodeFunctionData({
-        abi: registryImpl.abi,
-        functionName: "initialize",
-        args: [admin.account.address],
+            abi: registryImpl.abi,
+            functionName: "initialize",
+            args: [admin.account.address],
         });
-        const proxy = await viem.deployContract("ERC1967Proxy", [
-        registryImpl.address,
-        initData,
+        
+        // Deploy ERC1967Proxy directly - it should be available through OpenZeppelin
+        proxy = await viem.deployContract("TestERC1967Proxy", [
+            registryImpl.address,
+            initData,
         ]);
 
         // Attach registry ABI to proxy address

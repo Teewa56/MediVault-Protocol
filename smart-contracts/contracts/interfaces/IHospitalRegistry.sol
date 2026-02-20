@@ -24,6 +24,7 @@ interface IHospitalRegistry {
     error InvalidSignature();
 
     function initialize(address admin_) external;
+    function incrementNonce(address hospital) external;
 
     function registerHospital(string calldata name, string calldata country) external;
 

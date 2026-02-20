@@ -30,6 +30,9 @@ contract MediVaultFactory is Ownable {
     /// @notice Accepted stablecoin passed to every new vault (USDC)
     address public immutable stablecoin;
 
+    /// @notice Chainlink price feed passed to every new vault
+    address public immutable priceFeed;
+
     /// @notice user address → vault proxy address
     mapping(address => address) public vaultOf;
 
@@ -40,22 +43,26 @@ contract MediVaultFactory is Ownable {
      * @param implementation_ Initial MediVault implementation contract
      * @param registry_       HospitalRegistry contract address
      * @param stablecoin_     Stablecoin address (USDC)
+     * @param priceFeed_     Chainlink price feed address
      * @param admin_          Factory owner (multisig)
      */
     constructor(
         address implementation_,
         address registry_,
         address stablecoin_,
+        address priceFeed_,
         address admin_
     ) Ownable(admin_) {
         if (implementation_ == address(0)) revert ZeroAddress();
         if (registry_ == address(0))       revert ZeroAddress();
         if (stablecoin_ == address(0))     revert ZeroAddress();
+        if (priceFeed_ == address(0))      revert ZeroAddress();
         if (admin_ == address(0))          revert ZeroAddress();
 
         implementation = implementation_;
         registry       = registry_;
         stablecoin     = stablecoin_;
+        priceFeed      = priceFeed_;
     }
 
     /**
@@ -69,7 +76,7 @@ contract MediVaultFactory is Ownable {
         // Encode initialize call data
         bytes memory initData = abi.encodeCall(
             IMediVault.initialize,
-            (msg.sender, stablecoin, registry)
+            (msg.sender, stablecoin, registry, priceFeed)
         );
 
         // Deploy ERC1967 proxy pointing to shared implementation

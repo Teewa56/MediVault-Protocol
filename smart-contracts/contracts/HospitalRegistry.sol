@@ -45,6 +45,8 @@ contract HospitalRegistry is
         _disableInitializers();
     }
 
+    event NonceIncremented(address hospital, uint256 nonce);
+
     /**
      * @param admin_ Initial admin address (should be multisig)
      */
@@ -168,7 +170,7 @@ contract HospitalRegistry is
         
         // Additional check: ensure signature is not malleable
         if (sig.length != 65) revert InvalidSignature();
-        if (uint256(sig[32]) >= 27) revert InvalidSignature();
+        if (uint8(sig[32]) >= 27) revert InvalidSignature();
 
         return signer == hospital;
     }
