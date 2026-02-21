@@ -313,8 +313,8 @@ contract MediVault is
     function emergencyWithdrawal(address to, uint256 amount) external {
         require(emergencyMode, "Emergency mode not active");
         require(_isGuardian(msg.sender), "Not a guardian");
-        require(to != address(0), ZeroAddress());
-        require(amount > 0, InvalidAmount());
+        if (to == address(0)) revert ZeroAddress();
+        if (amount == 0) revert InvalidAmount();
         require(amount <= _stablecoin.balanceOf(address(this)), "Insufficient balance");
         
         _stablecoin.safeTransfer(to, amount);
