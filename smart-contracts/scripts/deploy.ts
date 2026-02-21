@@ -1,90 +1,94 @@
-import hardhat from "hardhat";
-import { formatEther, keccak256, stringToHex } from "viem";
-import ignition from "hardhat";
-import MediVaultProtocol from "../ignition/deploy.js";
+import { network } from "hardhat";
+import { formatEther, encodeFunctionData } from "viem";
 
 async function main() {
   console.log("Starting MediVault Protocol deployment...");
 
-  // Get deployer account
-  const [deployer] = await hardhat.viem.getWalletClients();
-  console.log("Deploying contracts with account:", deployer.account.address);
+  const { viem } = await network.connect();
+  const publicClient = await viem.getPublicClient();
+  const [deployer] = await viem.getWalletClients();
 
-  // Get account balance
-  const publicClient = hardhat.viem.getPublicClient();
+  console.log("Deploying with account:", deployer.account.address);
+
   const balance = await publicClient.getBalance({
     address: deployer.account.address,
   });
   console.log("Account balance:", formatEther(balance), "ETH");
 
-  // Get configuration from environment variables
-  const stablecoinAddress = process.env.USDC_ADDRESS || "0x0";
-  const adminAddress = deployer.account.address || process.env.ADMIN_ADDRESS;
+  const stablecoinAddress = (process.env.USDC_ADDRESS ?? "0xfffFFfFF00000000000000000000000000007A69") as `0x${string}`;
+  const priceFeedAddress  = (process.env.PRICE_FEED_ADDRESS ?? deployer.account.address) as `0x${string}`;
+  const adminAddress      = (process.env.ADMIN_ADDRESS ?? deployer.account.address) as `0x${string}`;
 
-  if (stablecoinAddress === "0x0") {
-    console.warn("WARNING: USDC_ADDRESS not set in environment. Using placeholder address.");
-  }
-
-  console.log("Deployment parameters:");
+  console.log("\nDeployment parameters:");
   console.log("- Stablecoin (USDC):", stablecoinAddress);
-  console.log("- Admin:", adminAddress);
+  console.log("- Price Feed:       ", priceFeedAddress);
+  console.log("- Admin:            ", adminAddress);
 
-  try {
-    // Deploy the protocol using Ignition
-    const { hospitalRegistry, mediVault, factory } = await ignition.deploy(MediVaultProtocol, {
-      parameters: {
-        HospitalRegistry: {
-          admin: adminAddress,
-        },
-        MediVaultFactory: {
-          stablecoin: stablecoinAddress,
-          admin: adminAddress,
-        },
-      },
-    });
+  // 1. Deploy HospitalRegistry implementation
+  console.log("\n[1/4] Deploying HospitalRegistry implementation...");
+  const registryImpl = await viem.deployContract("HospitalRegistry");
+  console.log("  HospitalRegistry impl:", registryImpl.address);
 
-    console.log("\nDeployment successful!");
-    console.log("Contract addresses:");
-    console.log("- HospitalRegistry:", hospitalRegistry.address);
-    console.log("- MediVault Implementation:", mediVault.address);
-    console.log("- MediVaultFactory:", factory.address);
+  // 2. Deploy HospitalRegistry proxy
+  console.log("[2/4] Deploying HospitalRegistry proxy...");
+  const registryInitData = encodeFunctionData({
+    abi: registryImpl.abi,
+    functionName: "initialize",
+    args: [adminAddress],
+  });
 
-    // Verify deployment by calling view functions
-    console.log("\nVerifying deployment...");
-    
-    // Check factory configuration
-    const deployedImplementation = await factory.read.implementation();
-    const deployedRegistry = await factory.read.registry();
-    const deployedStablecoin = await factory.read.stablecoin();
-    
-    console.log("Factory configuration:");
-    console.log("- Implementation:", deployedImplementation);
-    console.log("- Registry:", deployedRegistry);
-    console.log("- Stablecoin:", deployedStablecoin);
-    
-    // Check registry admin
-    const DEFAULT_ADMIN_ROLE = keccak256(stringToHex("DEFAULT_ADMIN_ROLE"));
-    const registryAdmin = await hospitalRegistry.read.hasRole([
-      DEFAULT_ADMIN_ROLE,
-      adminAddress,
-    ]);
-    console.log("- Registry admin set correctly:", registryAdmin);
+  const registryProxy = await viem.deployContract("TestERC1967Proxy", [
+    registryImpl.address,
+    registryInitData,
+  ]);
+  console.log("  HospitalRegistry proxy:", registryProxy.address);
 
-    console.log("\nMediVault Protocol deployed successfully!");
-    console.log("\nNext steps:");
-    console.log("1. Update frontend .env with contract addresses");
-    console.log("2. Register hospitals in the HospitalRegistry");
-    console.log("3. Users can create vaults via the MediVaultFactory");
+  const registry = await viem.getContractAt("HospitalRegistry", registryProxy.address);
 
-  } catch (error) {
-    console.error("Deployment failed:", error);
-    process.exit(1);
-  }
+  // 3. Deploy MediVault implementation
+  console.log("[3/4] Deploying MediVault implementation...");
+  const vaultImpl = await viem.deployContract("MediVault");
+  console.log("  MediVault impl:", vaultImpl.address);
+
+  // 4. Deploy MediVaultFactory
+  console.log("[4/4] Deploying MediVaultFactory...");
+  const factory = await viem.deployContract("MediVaultFactory", [
+    vaultImpl.address,
+    registryProxy.address,
+    stablecoinAddress,
+    priceFeedAddress,
+    adminAddress,
+  ]);
+  console.log("  MediVaultFactory:", factory.address);
+
+  // Link factory to registry
+  console.log("\nLinking factory to registry...");
+  await registry.write.setFactory([factory.address], {
+    account: deployer.account,
+  });
+  console.log("  Factory linked.");
+
+  // Verify
+  console.log("\nVerifying deployment...");
+  const deployedImpl      = await factory.read.implementation();
+  const deployedRegistry  = await factory.read.registry();
+  const deployedStablecoin = await factory.read.stablecoin();
+  const linkedFactory     = await registry.read.factory();
+
+  console.log("  Factory implementation:", deployedImpl);
+  console.log("  Factory registry:      ", deployedRegistry);
+  console.log("  Factory stablecoin:    ", deployedStablecoin);
+  console.log("  Registry factory:      ", linkedFactory);
+
+  console.log("\nMediVault Protocol deployed successfully!");
+  console.log("\nAdd these to your frontend .env:");
+  console.log(`NEXT_PUBLIC_FACTORY_ADDRESS=${factory.address}`);
+  console.log(`NEXT_PUBLIC_REGISTRY_ADDRESS=${registryProxy.address}`);
 }
 
 main()
   .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
+  .catch((err) => {
+    console.error(err);
     process.exit(1);
   });

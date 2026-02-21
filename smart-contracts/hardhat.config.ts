@@ -1,5 +1,7 @@
 import hardhatToolboxViemPlugin from "@nomicfoundation/hardhat-toolbox-viem";
-import { configVariable, defineConfig } from "hardhat/config";
+import { defineConfig } from "hardhat/config";
+import dotenv from 'dotenv';
+dotenv.config();
 
 export default defineConfig({
   plugins: [hardhatToolboxViemPlugin],
@@ -28,23 +30,23 @@ export default defineConfig({
       type: "edr-simulated",
       chainType: "op",
     },
-    sepolia: {
+    /*sepolia: {
       type: "http",
       chainType: "l1",
-      url: configVariable("SEPOLIA_RPC_URL"),
-      accounts: [configVariable("SEPOLIA_PRIVATE_KEY")],
-    },
+      url: `${process.env.SEPOLIA_RPC_URL}`,
+      accounts: [`${process.env.SEPOLIA_PRIVATE_KEY}`],
+    },*/
     polkadotHubTestnet: {
       type: "http",
       chainType: "l1",
-      url: configVariable("POLKADOT_HUB_RPC"),
-      accounts: [configVariable("PRIVATE_KEY")],
+      url: `${process.env.POLKADOT_HUB_RPC}`,
+      accounts: [`${process.env.PRIVATE_KEY}`],
     },
-    polkadotHub: {
+    /*polkadotHub: {
       type: "http",
       chainType: "l1",
-      url: configVariable("POLKADOT_HUB_MAINNET_RPC"),
-      accounts: [configVariable("PRIVATE_KEY")],
-    },
+      url: `${process.env.POLKADOT_HUB_MAINNET_RPC}`,
+      accounts: [`${process.env.PRIVATE_KEY}`],
+    },*/
   },
 });
