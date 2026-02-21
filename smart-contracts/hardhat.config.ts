@@ -9,6 +9,9 @@ export default defineConfig({
     profiles: {
       default: {
         version: "0.8.28",
+        settings: {
+          evmVersion: "london",
+        },
       },
       production: {
         version: "0.8.28",
@@ -17,6 +20,7 @@ export default defineConfig({
             enabled: true,
             runs: 200,
           },
+          evmVersion: "london",
         },
       },
     },
@@ -30,7 +34,7 @@ export default defineConfig({
       type: "edr-simulated",
       chainType: "op",
     },
-    /*sepolia: {
+    /*sepolia: { --uncomment when deploying to sepolia
       type: "http",
       chainType: "l1",
       url: `${process.env.SEPOLIA_RPC_URL}`,
@@ -42,7 +46,7 @@ export default defineConfig({
       url: `${process.env.POLKADOT_HUB_RPC}`,
       accounts: [`${process.env.PRIVATE_KEY}`],
     },
-    /*polkadotHub: {
+    /*polkadotHub: { --uncomment when deploying to polkadot hub
       type: "http",
       chainType: "l1",
       url: `${process.env.POLKADOT_HUB_MAINNET_RPC}`,
