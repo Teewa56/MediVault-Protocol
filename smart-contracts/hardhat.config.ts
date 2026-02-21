@@ -11,6 +11,7 @@ export default defineConfig({
         version: "0.8.20",
         settings: {
           evmVersion: "shanghai",
+          optimizer: { enabled: true, runs: 200 },
         },
       },
       production: {
