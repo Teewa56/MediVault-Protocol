@@ -31,7 +31,7 @@ export default defineConfig({
       type: "edr-simulated",
       chainType: "op",
     },
-    /*sepolia: { --uncomment when deploying to sepolia
+    /*sepolia: { --uncomment when deploying to sepolia, also add the variables to the .env file
       type: "http",
       chainType: "l1",
       url: `${process.env.SEPOLIA_RPC_URL}`,
@@ -43,7 +43,7 @@ export default defineConfig({
       url: `${process.env.POLKADOT_HUB_RPC}`,
       accounts: [`${process.env.PRIVATE_KEY}`],
     },
-    /*polkadotHub: { --uncomment when deploying to polkadot hub
+    /*polkadotHub: { --uncomment when deploying to polkadot hub, also add the variables to the .env file
       type: "http",
       chainType: "l1",
       url: `${process.env.POLKADOT_HUB_MAINNET_RPC}`,

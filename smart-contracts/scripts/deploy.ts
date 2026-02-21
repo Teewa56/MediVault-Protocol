@@ -13,7 +13,7 @@ async function main() {
   const balance = await publicClient.getBalance({
     address: deployer.account.address,
   });
-  console.log("Account balance:", formatEther(balance), "WEND");//westend token balance
+  console.log("Account balance:", formatEther(balance), "WND");//westend token balance
 
   const stablecoinAddress = (process.env.USDC_ADDRESS ?? "0xfffFFfFF00000000000000000000000000007A69") as `0x${string}`;
   const priceFeedAddress  = (process.env.PRICE_FEED_ADDRESS ?? deployer.account.address) as `0x${string}`;
