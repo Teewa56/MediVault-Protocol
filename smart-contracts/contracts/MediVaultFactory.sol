@@ -52,7 +52,8 @@ contract MediVaultFactory is Ownable {
         address stablecoin_,
         address priceFeed_,
         address admin_
-    ) Ownable(admin_) {
+    ) {
+        transferOwnership(admin_);
         if (implementation_ == address(0)) revert ZeroAddress();
         if (registry_ == address(0))       revert ZeroAddress();
         if (stablecoin_ == address(0))     revert ZeroAddress();

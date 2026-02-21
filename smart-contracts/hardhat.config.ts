@@ -8,15 +8,15 @@ export default defineConfig({
   solidity: {
     profiles: {
       default: {
-        version: "0.8.28",
+        version: "0.8.20",
         settings: {
-          evmVersion: "cancun",
+          evmVersion: "shanghai",
         },
       },
       production: {
-        version: "0.8.28",
+        version: "0.8.20",
         settings: {
-          evmVersion: "cancun",
+          evmVersion: "shanghai",
           optimizer: { enabled: true, runs: 200 },
         },
       },

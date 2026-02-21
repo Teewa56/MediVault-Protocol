@@ -3,8 +3,8 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
@@ -435,12 +435,8 @@ contract MediVault is
         require(pendingUpgradeImplementation != address(0), "No pending upgrade");
         require(block.timestamp >= upgradeRequestedAt + upgradeTimelock, "Timelock not expired");
         
-        address oldImplementation = _getImplementation();
-        
         // Perform the actual upgrade
         upgradeToAndCall(pendingUpgradeImplementation, "");
-        
-        emit UpgradeExecuted(oldImplementation, pendingUpgradeImplementation);
         
         pendingUpgradeImplementation = address(0);
         upgradeRequestedAt = 0;
@@ -451,15 +447,6 @@ contract MediVault is
         require(pendingUpgradeImplementation == address(0) || block.timestamp >= upgradeRequestedAt + upgradeTimelock, "Timelock active");
     }
 
-    function _getImplementation() internal view returns (address) {
-        // ERC1967 implementation slot address: 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc
-        bytes32 slot = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
-        address impl;
-        assembly {
-            impl := sload(slot)
-        }
-        return impl;
-    }
 
     /**
      * @notice Get USD value of token amount using Chainlink price feed
