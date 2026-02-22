@@ -137,7 +137,7 @@ cd medivault-protocol
 cd frontend 
 npm install
 cd ../smart-contracts
-npm install
+npm install (add --legacy-peer-deps if you get an error)
 ```
 
 ### Step 3: Configure Environment Variables
