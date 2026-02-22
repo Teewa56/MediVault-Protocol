@@ -1,19 +1,31 @@
 import { network } from "hardhat";
-import { formatEther, encodeFunctionData } from "viem";
+import { formatEther, encodeFunctionData, defineChain } from "viem";
+
+const polkadotHubTestnet = defineChain({
+  id: 420420417,
+  name: "Polkadot Hub TestNet",
+  network: "polkadot-hub-testnet",
+  nativeCurrency: { name: "PAS", symbol: "PAS", decimals: 18 },
+  rpcUrls: {
+    default: {
+      http: [process.env.POLKADOT_HUB_RPC ?? "https://services.polkadothub-rpc.com/testnet"],
+    },
+  },
+});
 
 async function main() {
   console.log("Starting MediVault Protocol deployment...");
 
   const { viem } = await network.connect();
-  const publicClient = await viem.getPublicClient();
-  const [deployer] = await viem.getWalletClients();
+  const publicClient = await viem.getPublicClient({ chain: polkadotHubTestnet });
+  const [deployer] = await viem.getWalletClients({ chain: polkadotHubTestnet });
 
   console.log("Deploying with account:", deployer.account.address);
 
   const balance = await publicClient.getBalance({
     address: deployer.account.address,
   });
-  console.log("Account balance:", formatEther(balance), "WND");//westend token balance
+  console.log("Account balance:", formatEther(balance), "PAS");//PAS token balance
 
   const stablecoinAddress = (process.env.USDC_ADDRESS ?? "0xfffFFfFF00000000000000000000000000007A69") as `0x${string}`;
   const priceFeedAddress  = (process.env.PRICE_FEED_ADDRESS ?? deployer.account.address) as `0x${string}`;
@@ -24,9 +36,11 @@ async function main() {
   console.log("- Price Feed:       ", priceFeedAddress);
   console.log("- Admin:            ", adminAddress);
 
+  const client = { public: publicClient, wallet: deployer };
+
   // 1. Deploy HospitalRegistry implementation
   console.log("\n[1/4] Deploying HospitalRegistry implementation...");
-  const registryImpl = await viem.deployContract("HospitalRegistry");
+  const registryImpl = await viem.deployContract("HospitalRegistry", [], { client });
   console.log("  HospitalRegistry impl:", registryImpl.address);
 
   // 2. Deploy HospitalRegistry proxy
@@ -40,14 +54,14 @@ async function main() {
   const registryProxy = await viem.deployContract("TestERC1967Proxy", [
     registryImpl.address,
     registryInitData,
-  ]);
+  ], { client });
   console.log("  HospitalRegistry proxy:", registryProxy.address);
 
-  const registry = await viem.getContractAt("HospitalRegistry", registryProxy.address);
+  const registry = await viem.getContractAt("HospitalRegistry", registryProxy.address, { client });
 
   // 3. Deploy MediVault implementation
   console.log("[3/4] Deploying MediVault implementation...");
-  const vaultImpl = await viem.deployContract("MediVault");
+  const vaultImpl = await viem.deployContract("MediVault", [], { client });
   console.log("  MediVault impl:", vaultImpl.address);
 
   // 4. Deploy MediVaultFactory
@@ -58,7 +72,7 @@ async function main() {
     stablecoinAddress,
     priceFeedAddress,
     adminAddress,
-  ]);
+  ], { client });
   console.log("  MediVaultFactory:", factory.address);
 
   // Link factory to registry

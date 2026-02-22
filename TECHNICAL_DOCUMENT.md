@@ -106,14 +106,14 @@ On success: USDC transferred directly to hospital wallet, event emitted
 | Frontend | Next.js 14 (App Router), TailwindCSS v4, shadcn/ui |
 | Wallet | RainbowKit + wagmi v2 |
 | Biometric | WebAuthn API (client-side), bytes32 on-chain commitment |
-| Blockchain | Polkadot Hub EVM (Westend testnet) |
+| Blockchain | Polkadot Hub EVM |
 ```
 
 ## 6. Environment Configuration
 ### => Required .env variables for smart-contracts:
 ```
 PRIVATE_KEY=<deployer_private_key>
-POLKADOT_HUB_RPC=https://westend-asset-hub-eth-rpc.polkadot.io
+POLKADOT_HUB_RPC=https://services.polkadothub-rpc.com/testnet
 USDC_ADDRESS=<stablecoin_contract_on_hub>
 MULTISIG_ADMIN=<3 wallet addresses separated by comma>
 ADMIN_ADDRESS=<admin_wallet_address>

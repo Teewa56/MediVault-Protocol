@@ -28,6 +28,7 @@ export default defineConfig({
       type: "http",
       chainType: "l1",
       url: `${process.env.POLKADOT_HUB_RPC}`,
+      chainId: 420420417,
       accounts: [`${process.env.PRIVATE_KEY}`],
     },
   },
