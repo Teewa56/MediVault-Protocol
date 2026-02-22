@@ -27,9 +27,9 @@ async function main() {
   });
   console.log("Account balance:", formatEther(balance), "PAS");//PAS token balance
 
-  const stablecoinAddress = (process.env.USDC_ADDRESS ?? "0xfffFFfFF00000000000000000000000000007A69") as `0x${string}`;
-  const priceFeedAddress  = (process.env.PRICE_FEED_ADDRESS ?? deployer.account.address) as `0x${string}`;
-  const adminAddress      = (process.env.ADMIN_ADDRESS ?? deployer.account.address) as `0x${string}`;
+  const stablecoinAddress = (process.env.USDC_ADDRESS ?? "0xfffFFfFF00000000000000000000000000007A69").toLowerCase() as `0x${string}`;
+  const priceFeedAddress  = (process.env.PRICE_FEED_ADDRESS ?? deployer.account.address).toLowerCase() as `0x${string}`;
+  const adminAddress      = (process.env.ADMIN_ADDRESS ?? deployer.account.address).toLowerCase() as `0x${string}`;
 
   console.log("\nDeployment parameters:");
   console.log("- Stablecoin (USDC):", stablecoinAddress);
