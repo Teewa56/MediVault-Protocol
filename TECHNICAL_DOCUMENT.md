@@ -114,7 +114,7 @@ On success: USDC transferred directly to hospital wallet, event emitted
 ```
 PRIVATE_KEY=<deployer_private_key>
 POLKADOT_HUB_RPC=https://services.polkadothub-rpc.com/testnet
-USDC_ADDRESS=<stablecoin_contract_on_hub>
+USDC_ADDRESS=0xfffFFfFF00000000000000000000000000007A69
 MULTISIG_ADMIN=<3 wallet addresses separated by comma>
 ADMIN_ADDRESS=<admin_wallet_address>
 ```
@@ -124,8 +124,8 @@ NEXT_PUBLIC_FACTORY_ADDRESS=<deployed_factory_address>
 NEXT_PUBLIC_REGISTRY_ADDRESS=<deployed_registry_address>
 NEXT_PUBLIC_CHAIN_ID=420420417
 NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=<walletconnect_project_id>
-NEXT_PUBLIC_HUB_MAINNET_RPC=<hub_mainnet_rpc>
-NEXT_PUBLIC_USDC_ADDRESS=<usdc_address>
+NEXT_PUBLIC_HUB_MAINNET_RPC=https://services.polkadothub-rpc.com/testnet
+NEXT_PUBLIC_USDC_ADDRESS=0xfffFFfFF00000000000000000000000000007A69
 ```
 ---
 ## 7. Implementation Notes
