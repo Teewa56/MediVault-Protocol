@@ -117,11 +117,13 @@ POLKADOT_HUB_RPC=https://services.polkadothub-rpc.com/testnet
 USDC_ADDRESS=0xfffFFfFF00000000000000000000000000007A69
 MULTISIG_ADMIN=<3 wallet addresses separated by comma>
 ADMIN_ADDRESS=<admin_wallet_address>
+PRICE_FEED_ADDRESS=<price_feed_address>
 ```
 ### => Required .env variables for frontend:
 ```
 NEXT_PUBLIC_FACTORY_ADDRESS=<deployed_factory_address>
 NEXT_PUBLIC_REGISTRY_ADDRESS=<deployed_registry_address>
+NEXT_PUBLIC_PRICE_FEED_ADDRESS=<depolyed_mock_address>
 NEXT_PUBLIC_CHAIN_ID=420420417
 NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=<walletconnect_project_id>
 NEXT_PUBLIC_HUB_MAINNET_RPC=https://services.polkadothub-rpc.com/testnet

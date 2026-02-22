@@ -26,25 +26,31 @@ async function main() {
     address: deployer.account.address,
   });
   console.log("Account balance:", formatEther(balance), "PAS");//PAS token balance
-
-  const stablecoinAddress = (process.env.USDC_ADDRESS ?? "0xfffFFfFF00000000000000000000000000007A69").toLowerCase() as `0x${string}`;
-  const priceFeedAddress  = (process.env.PRICE_FEED_ADDRESS ?? deployer.account.address).toLowerCase() as `0x${string}`;
-  const adminAddress      = (process.env.ADMIN_ADDRESS ?? deployer.account.address).toLowerCase() as `0x${string}`;
+  if (!process.env.USDC_ADDRESS) {
+    throw new Error("USDC_ADDRESS must be set");
+  }
+  const stablecoinAddress = (process.env.USDC_ADDRESS as `0x${string}`).toLowerCase() as `0x${string}`;
+  const adminAddress      = (deployer.account.address).toLowerCase() as `0x${string}`;
 
   console.log("\nDeployment parameters:");
   console.log("- Stablecoin (USDC):", stablecoinAddress);
-  console.log("- Price Feed:       ", priceFeedAddress);
   console.log("- Admin:            ", adminAddress);
 
   const client = { public: publicClient, wallet: deployer };
 
+  // 0. Deploy mock USDC/USD price feed (returns $1.00 - use for testnet)
+  console.log("\n[0/5] Deploying MockUSDCPriceFeed (USDC/USD = $1.00)...");
+  const priceFeed = await viem.deployContract("MockUSDCPriceFeed", [], { client });
+  const priceFeedAddress = priceFeed.address as `0x${string}`;
+  console.log("  MockUSDCPriceFeed:", priceFeedAddress);
+
   // 1. Deploy HospitalRegistry implementation
-  console.log("\n[1/4] Deploying HospitalRegistry implementation...");
+  console.log("\n[1/5] Deploying HospitalRegistry implementation...");
   const registryImpl = await viem.deployContract("HospitalRegistry", [], { client });
   console.log("  HospitalRegistry impl:", registryImpl.address);
 
   // 2. Deploy HospitalRegistry proxy
-  console.log("[2/4] Deploying HospitalRegistry proxy...");
+  console.log("[2/5] Deploying HospitalRegistry proxy...");
   const registryInitData = encodeFunctionData({
     abi: registryImpl.abi,
     functionName: "initialize",
@@ -60,12 +66,12 @@ async function main() {
   const registry = await viem.getContractAt("HospitalRegistry", registryProxy.address, { client });
 
   // 3. Deploy MediVault implementation
-  console.log("[3/4] Deploying MediVault implementation...");
+  console.log("[3/5] Deploying MediVault implementation...");
   const vaultImpl = await viem.deployContract("MediVault", [], { client });
   console.log("  MediVault impl:", vaultImpl.address);
 
   // 4. Deploy MediVaultFactory
-  console.log("[4/4] Deploying MediVaultFactory...");
+  console.log("[4/5] Deploying MediVaultFactory...");
   const factory = await viem.deployContract("MediVaultFactory", [
     vaultImpl.address,
     registryProxy.address,
@@ -98,6 +104,7 @@ async function main() {
   console.log("\nAdd these to your frontend .env:");
   console.log(`NEXT_PUBLIC_FACTORY_ADDRESS=${factory.address}`);
   console.log(`NEXT_PUBLIC_REGISTRY_ADDRESS=${registryProxy.address}`);
+  console.log(`NEXT_PUBLIC_PRICE_FEED_ADDRESS=${priceFeedAddress}`);
 }
 
 main()
